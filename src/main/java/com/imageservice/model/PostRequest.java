@@ -1,5 +1,6 @@
 package com.imageservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +17,11 @@ public class PostRequest {
     // OR image URL
     // optional label for the image
     // option field to enable object detection
-    private MultipartFile image;
-
-    private String imageUri;
+    private String image;
 
     private String label;
 
-    private boolean enableDetection;
+    @JsonProperty("enableDetection")
+    private Boolean enableDetection;
 
 }

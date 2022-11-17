@@ -53,25 +53,28 @@ public class ImagesController {
 
     @PostMapping(
             path = "/images",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<PostResponse> postImages(@ModelAttribute PostRequest request){
+    public ResponseEntity<PostResponse> postImages(@RequestBody PostRequest request){
         // Choosing MULTIPLART_FORM_DATA_VALUE because we want to send in a file and possibly a label and objectDetection
 
+        System.out.println(request.toString());
         System.out.println(request.getLabel());
-        System.out.println(request.isEnableDetection());
+        System.out.println(request.getEnableDetection());
         System.out.println(request.getImage());
 
-        if(request.getImage() == null && request.getImageUri() == null) {
+//        if(request.getImage() == null && request.getImageUri() == null) {
+        if(request.getImage() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
         }
 
-        if(request.getImage() != null && request.getImageUri() != null && !request.getImageUri().isEmpty()) {
-            // TODO change to bad request
-            throw new IllegalArgumentException("Only one of image of image uri can be specified");
-        }
+//        if(request.getImage() != null && request.getImageUri() != null && !request.getImageUri().isEmpty()) {
+//        if(request.getImage() != null) {
+//            // TODO change to bad request
+//            throw new IllegalArgumentException("Only one of image of image uri can be specified");
+//        }
 
 
         ImageFile image = ImageFile.builder()
@@ -86,7 +89,8 @@ public class ImagesController {
 
         // TODO create image service class to hold logic
         // We send in the file but the pomeranian file will get used
-        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
+//        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
+        visionService.getImageAnnotations(request.getImage());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

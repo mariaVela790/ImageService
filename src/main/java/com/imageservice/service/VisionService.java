@@ -9,7 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,13 +26,11 @@ public class VisionService {
 
     // TODO be sure to call "close" on the imageClient when done
 
-    private Image getImage(MultipartFile image, String imageUri) {
+    private Image getImage(String imagePath, String imageUri) {
         try {
-            if (image != null) {
-                byte[] imgBytes = StreamUtils.copyToByteArray(image.getInputStream());
-                ByteString imgByteString = ByteString.copyFrom(imgBytes);
-
-                return Image.newBuilder().setContent(imgByteString).build();
+            if (imagePath != null) {
+                ByteString imgBytes = ByteString.readFrom(Files.newInputStream(Paths.get(imagePath)));
+                return Image.newBuilder().setContent(imgBytes).build();
 
             } else {
                 ImageSource imageSource = ImageSource.newBuilder().setImageUri(imageUri).build();
@@ -43,23 +46,19 @@ public class VisionService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<AnnotateImageResponse>> getImageAnnotations(MultipartFile image, String imageUri) {
+    public CompletableFuture<List<AnnotateImageResponse>> getImageAnnotations(String imagePath, String imageUri) {
+
         log.info("Getting image annotations");
-        // TODO read multipartfile as a ByteString?
-        //        TODO if the above option doesn't work, save file to local directory?
-        //        TODO for file uris pull the file?
-        // TODO separate methods one to handle uris and one to handle files
 
         List<AnnotateImageResponse> responses = null;
+
         try (ImageAnnotatorClient visionClient = ImageAnnotatorClient.create()) {
 
             List<AnnotateImageRequest> requests = new ArrayList<>();
 
             Feature feat = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
-            Image img = getImage(image, imageUri);
-
+            Image img = getImage(imagePath, imageUri);
             AnnotateImageRequest request = AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
-
             requests.add(request);
 
             BatchAnnotateImagesResponse response = visionClient.batchAnnotateImages(requests);
