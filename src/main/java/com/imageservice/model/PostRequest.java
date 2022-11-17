@@ -16,8 +16,9 @@ public class PostRequest {
     // OR image URL
     // optional label for the image
     // option field to enable object detection
-    @NotNull
-    private MultipartFile file;
+    private MultipartFile image;
+
+    private String imageUri;
 
     private String label;
 

@@ -61,7 +61,17 @@ public class ImagesController {
 
         System.out.println(request.getLabel());
         System.out.println(request.isEnableDetection());
-        System.out.println(request.getFile());
+        System.out.println(request.getImage());
+
+        if(request.getImage() == null && request.getImageUri() == null) {
+            // TODO change to bad request
+            throw new IllegalArgumentException("Image file or external image url is required.");
+        }
+
+        if(request.getImage() != null && request.getImageUri() != null && !request.getImageUri().isEmpty()) {
+            // TODO change to bad request
+            throw new IllegalArgumentException("Only one of image of image uri can be specified");
+        }
 
 
         ImageFile image = ImageFile.builder()
@@ -74,7 +84,9 @@ public class ImagesController {
                 .label("genLabel")
                 .build();
 
-        visionService.getImageAnnotations(request.getFile());
+        // TODO create image service class to hold logic
+        // We send in the file but the pomeranian file will get used
+        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
