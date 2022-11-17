@@ -4,19 +4,25 @@ import com.imageservice.model.GetResponse;
 import com.imageservice.model.ImageFile;
 import com.imageservice.model.PostRequest;
 import com.imageservice.model.PostResponse;
+import com.imageservice.service.VisionService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.sound.midi.Soundbank;
-import javax.validation.Valid;
 import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 public class ImagesController {
+
+    @Autowired
+    @NonNull
+    private VisionService visionService;
 
     @GetMapping(
             path = "/images",
@@ -67,6 +73,13 @@ public class ImagesController {
                 .image(image)
                 .label("genLabel")
                 .build();
+
+
+//        request.getFile().transferTo("/src/main/resources/images");
+//        visionService.getImageAnnotations(request.getFile().);
+        // TODO 1: Get the file inputStream() and
+        // send file to vision source api
+        visionService.getImageAnnotations(request.getFile());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
