@@ -74,11 +74,6 @@ public class ImagesController {
                 .label("genLabel")
                 .build();
 
-
-//        request.getFile().transferTo("/src/main/resources/images");
-//        visionService.getImageAnnotations(request.getFile().);
-        // TODO 1: Get the file inputStream() and
-        // send file to vision source api
         visionService.getImageAnnotations(request.getFile());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
