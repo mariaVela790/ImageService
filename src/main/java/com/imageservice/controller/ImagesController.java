@@ -1,7 +1,7 @@
 package com.imageservice.controller;
 
 import com.imageservice.model.GetResponse;
-import com.imageservice.model.ImageFile;
+import com.imageservice.model.Image;
 import com.imageservice.model.PostRequest;
 import com.imageservice.model.PostResponse;
 import com.imageservice.service.VisionService;
@@ -77,20 +77,19 @@ public class ImagesController {
 //        }
 
 
-        ImageFile image = ImageFile.builder()
+        Image image = Image.builder()
                 .filePath("/file/path")
                 .build();
 
         PostResponse response = PostResponse.builder()
                 .imageId("123")
                 .image(image)
-                .label("genLabel")
                 .build();
 
         // TODO create image service class to hold logic
         // We send in the file but the pomeranian file will get used
 //        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
-        visionService.getImageAnnotations(request.getImage());
+        visionService.getImageAnnotations(request.getImage(), request.getImageUrl());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

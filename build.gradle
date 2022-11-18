@@ -20,6 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'com.mysql:mysql-connector-j'
+
     // connector for mySQL db
     implementation 'mysql:mysql-connector-java:8.0.15'
 
@@ -35,6 +36,10 @@ dependencies {
 
     // Spring Boot input validation
     implementation('org.springframework.boot:spring-boot-starter-validation')
+
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
+
 
 }
 

@@ -19,6 +19,8 @@ public class PostRequest {
     // option field to enable object detection
     private String image;
 
+    private String imageUrl;
+
     private String label;
 
     @JsonProperty("enableDetection")

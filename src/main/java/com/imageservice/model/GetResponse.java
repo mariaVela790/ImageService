@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GetResponse {
     // list of Images
-    private List<ImageFile> images;
+    private List<Image> images;
 }
