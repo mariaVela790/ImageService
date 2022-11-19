@@ -1,0 +1,18 @@
+-- CREATE TABLE Images (
+--     image_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+--     image_object_id BIGINT,
+--     image_file BLOB,
+--     label VARCHAR(50),
+--     price DOUBLE);
+--
+-- CREATE TABLE Objects (
+--     object_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+--     image_object_id BIGINT,
+--     object VARCHAR(50));
+--
+-- CREATE TABLE ImageObjects (
+--       image_id BIGINT,
+--       object_id BIGINT,
+--       CONSTRAINT image_object_id PRIMARY KEY (image_id, object_id),
+--       CONSTRAINT FK_image FOREIGN KEY (image_id) REFERENCES Images (image_id),
+--       CONSTRAINT FK_object FOREIGN KEY (object_id) REFERENCES Objects (object_id));

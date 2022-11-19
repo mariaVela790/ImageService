@@ -24,6 +24,11 @@ dependencies {
     // connector for mySQL db
     implementation 'mysql:mysql-connector-java:8.0.15'
 
+    // apache library to download from url
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+
     // Dependencies for vision API
     implementation platform('com.google.cloud:libraries-bom:26.1.3')
     implementation 'com.google.cloud:google-cloud-vision'

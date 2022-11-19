@@ -12,7 +12,7 @@ public class DetectedObject {
 
     @Id
     @GeneratedValue
-    private Long detectedObjectId;
+    private String detectedObjectId;
 
     private String detectedObjectName;
 }
