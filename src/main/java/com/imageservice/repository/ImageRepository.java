@@ -23,7 +23,7 @@ public interface ImageRepository {
 
     List<ImageEntity> findImagesByObjects(List<String> objects);
 
-    Long saveImageReturnId(ImageEntity image);
+    ImageEntity saveImageWithObjects(ImageEntity image);
 
 //    List<ImageEntity> findByDe
 

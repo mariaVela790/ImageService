@@ -28,10 +28,15 @@ public class JdbcImageObjectRepository implements ImageObjectRepository{
                 (rs, rowNum) -> rs.getLong("image_id"));
     }
 
+//    @Override
+//    public List<Long> getImageIdsByObjectIds(List<Long> objectIds) {
+//        return null;
+//    }
+
     @Override
-    public List<Long> getImageIdsByObjectIds(Long objectIds) {
-        return namedParameterJdbcTemplate.query("SELECT (image_id) FROM image_objects WHERE object_id IN (:objectIds)",
-                new MapSqlParameterSource("objectIds", objectIds),
+    public List<Long> getImageIdsByObjectIds(List<Long>  objectIds) {
+        return namedParameterJdbcTemplate.query("SELECT (image_id) FROM image_objects WHERE object_id IN (:objectids)",
+                new MapSqlParameterSource("objectids", objectIds),
                 (rs, rowNum) -> rs.getLong("image_id")
                 );
     }
@@ -44,5 +49,13 @@ public class JdbcImageObjectRepository implements ImageObjectRepository{
         return namedParameterJdbcTemplate.update("INSERT INTO image_objects (object_id,image_id) VALUES (:object_id, :image_id)",
                 mapSqlParameterSource
                 );
+    }
+
+    @Override
+    public int save(List<Long> objectIds, Long imageId) {
+        for (Long objectId : objectIds) {
+            save(objectId, imageId);
+        }
+        return 0;
     }
 }

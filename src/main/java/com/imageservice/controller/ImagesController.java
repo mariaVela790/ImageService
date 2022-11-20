@@ -47,6 +47,10 @@ public class ImagesController {
     )
     public ResponseEntity<GetResponse> getImageSearch(@RequestParam(required = false) List<String> objects) {
         if(objects != null) {
+            for (String object : objects) {
+                System.out.println(object);
+            }
+
             List<ImageEntity> imageEntities = imageRepository.findImagesByObjects(objects);
             List<Image> imagesWithObjects = new ArrayList<>();
 
@@ -169,7 +173,29 @@ public class ImagesController {
                 .label(request.getLabel())
                 .build();
 
-        PostResponse response = imageService.analyzeImage(image, request.getEnableDetection());
+        ImageEntity analysisResponse = imageService.analyzeImage(image, request.getEnableDetection());
+        ImageEntity imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
+        List<String> objects = new ArrayList<>();
+        PostResponse response = null;
+
+        if (imageSaved != null) {
+
+            System.out.println("image not null");
+
+            if (imageSaved.getDetectedObjects() != null) {
+                for (DetectedObjectEntity detectedObject : imageSaved.getDetectedObjects()) {
+                    objects.add(detectedObject.getObject());
+                }
+            }
+
+            response = PostResponse.builder()
+                    .imageId(imageSaved.getImageId())
+                    .label(imageSaved.getLabel())
+                    .detectedObjects(objects)
+                    .build();
+
+        }
+
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

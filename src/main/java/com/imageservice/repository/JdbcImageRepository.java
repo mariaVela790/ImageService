@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class JdbcImageRepository implements ImageRepository{
@@ -27,13 +31,7 @@ public class JdbcImageRepository implements ImageRepository{
 
     @Override
     public int count() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM IMAGES", Integer.class);
-    }
-
-    @Override
-    public int save(ImageEntity imageEntity) {
-
-        return 0;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM images", Integer.class);
     }
 
     @Override
@@ -88,8 +86,28 @@ public class JdbcImageRepository implements ImageRepository{
     }
 
     @Override
-    public Long saveImageReturnId(ImageEntity image) {
-        return null;
+    public int save(ImageEntity image) {
+        return namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label)",
+                new MapSqlParameterSource("label", image.getLabel()));
+    }
+
+    @Override
+    public ImageEntity saveImageWithObjects(ImageEntity image) {
+        System.out.printf("Saving image");
+        KeyHolder key = new GeneratedKeyHolder();
+        int rows = namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label) ",
+                new MapSqlParameterSource("label", image.getLabel()),
+                key);
+        System.out.printf("rows inserted %s", rows);
+
+        Long imageId = Objects.requireNonNull(key.getKey()).longValue();
+
+        // save objects and get their ids
+        List<Long> objectIds = objectRepository.saveObjectsReturnIds(image.getDetectedObjects());
+
+        imageObjectRepository.save(objectIds, imageId);
+        image.setImageId(imageId);
+        return image;
     }
 
 }

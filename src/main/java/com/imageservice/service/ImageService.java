@@ -1,5 +1,7 @@
 package com.imageservice.service;
 
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+import com.google.cloud.vision.v1.EntityAnnotation;
 import com.imageservice.entity.DetectedObjectEntity;
 import com.imageservice.entity.ImageEntity;
 import com.imageservice.model.Image;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -44,67 +47,77 @@ public class ImageService {
         return filename;
     }
 
-    private List<String> getDetectedObject(Image image) {
-        List<String> detectedObjects = new ArrayList<>();
+    private List<DetectedObjectEntity> getDetectedObjects(Image image) {
+        List<DetectedObjectEntity> detectedObjects = new ArrayList<>();
 
-//        try {
+        try {
             // TODO Uncomment when ready to test with api
-//            List<AnnotateImageResponse> response =  visionService.getImageAnnotations(image.getFilePath(), image.getImageUrl()).get();
-            // map response from vision service to list of objects using streaming api
+            List<AnnotateImageResponse> response =  visionService.getImageAnnotations(image.getFilePath(), image.getImageUrl()).get();
+//             map response from vision service to list of objects using streaming api
 
-        detectedObjects.add("cat");
-        detectedObjects.add("kitten");
-        detectedObjects.add("villain");
+            List<EntityAnnotation> entityAnnotations = response.get(0).getLabelAnnotationsList();
 
 
+            for (EntityAnnotation entityAnnotation : entityAnnotations) {
+                DetectedObjectEntity detectedObject = DetectedObjectEntity.builder()
+                        .object(entityAnnotation.getDescription())
+                        .build();
+                detectedObjects.add(detectedObject);
+            }
+//        detectedObjects.add("cat");
+//        detectedObjects.add("kitten");
+//        detectedObjects.add("villain");
 
-//        } catch (ExecutionException | InterruptedException e) {
-//            System.out.print("Error getting response from vision service ");
-//            e.printStackTrace();
-//
-//        }
+
+
+        } catch (ExecutionException | InterruptedException e) {
+            System.out.print("Error getting response from vision service ");
+            e.printStackTrace();
+
+        }
 
         return detectedObjects;
     }
 
     // logic to get annotations
-    public PostResponse analyzeImage(Image image, boolean enableDetection) {
+    public ImageEntity analyzeImage(Image image, boolean enableDetection) {
+
+        ImageEntity analyzedImage = ImageEntity.builder().build();
 
         if (image.getLabel() == null || image.getLabel().isEmpty()) {
             System.out.println("Label not detected! Generating new label");
             String generatedLabel = generateLabel();
-            image.setLabel(generatedLabel);
+            analyzedImage.setLabel(generatedLabel);
+        } else {
+            analyzedImage.setLabel(image.getLabel());
         }
 
         if (enableDetection) {
             System.out.println("Detection enabled!");
-            List<String> detectedObjects = getDetectedObject(image);
-            image.setObjectsDetected(detectedObjects);
+            List<DetectedObjectEntity> detectedObjects = getDetectedObjects(image);
+            analyzedImage.setDetectedObjects(detectedObjects);
         }
 
         // map image to entity and save
-        List<String> objects = image.getObjectsDetected();
-        List<DetectedObjectEntity> detectedObjectEntities = new ArrayList<>();
+//        List<String> objects = image.getObjectsDetected();
+//        List<DetectedObjectEntity> detectedObjectEntities = new ArrayList<>();
+//
+//        for(String object : objects) {
+//            DetectedObjectEntity detectedObject = DetectedObjectEntity.builder().object(object).build();
+//            detectedObjectEntities.add(detectedObject);
+////            objectRepository.save(detectedObject);
+//        }
 
-        for(String object : objects) {
-            DetectedObjectEntity detectedObject = DetectedObjectEntity.builder().object(object).build();
-            detectedObjectEntities.add(detectedObject);
-//            objectRepository.save(detectedObject);
-        }
-
-        ImageEntity imageEntity = ImageEntity.builder()
-                .label(image.getLabel())
-                .detectedObjects(detectedObjectEntities)
-                .build();
+        return analyzedImage;
 
 //        imageRepository.save(imageEntity);
 
 
-        return PostResponse.builder()
-                .imageId(1234L)
-                .label(image.getLabel())
-                .detectedObjects(image.getObjectsDetected())
-                .build();
+//        return PostResponse.builder()
+//                .imageId(1234L)
+//                .label(image.getLabel())
+//                .detectedObjects(image.getObjectsDetected())
+//                .build();
     }
 
 

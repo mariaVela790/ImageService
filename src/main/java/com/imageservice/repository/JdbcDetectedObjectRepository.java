@@ -4,9 +4,13 @@ import com.imageservice.entity.DetectedObjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
@@ -35,6 +39,13 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
                 (rs, rowNum) -> rs.getLong("object_id"));
     }
 
+//    @Override
+//    public List<Long> getObjectIdsByDetectedObjects(List<DetectedObjectEntity> objectEntities) {
+//        return namedParameterJdbcTemplate.query("SELECT (object_id) FROM objects WHERE object IN (:objects)",
+//                new MapSqlParameterSource("objects", objectEntity.getObject()),
+//                (rs, rowNum) -> rs.);
+//    }
+
     @Override
     public int save(DetectedObjectEntity detectedObjectEntity) {
         return 0;
@@ -47,6 +58,20 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
 
     @Override
     public Long saveObjectReturnId(DetectedObjectEntity detectedObjectEntity) {
-        return null;
+        KeyHolder key = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update("INSERT INTO objects (object) VALUES (:object)",
+                new MapSqlParameterSource("object", detectedObjectEntity.getObject()),
+                key);
+
+        return Objects.requireNonNull(key.getKey()).longValue();
+    }
+
+    @Override
+    public List<Long> saveObjectsReturnIds(List<DetectedObjectEntity> detectedObjectEntities) {
+        List<Long> savedObjectIds = new ArrayList<>();
+        for (DetectedObjectEntity detectedObjectEntity : detectedObjectEntities) {
+            savedObjectIds.add(saveObjectReturnId(detectedObjectEntity));
+        }
+        return savedObjectIds;
     }
 }
