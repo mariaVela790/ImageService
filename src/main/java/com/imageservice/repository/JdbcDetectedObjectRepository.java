@@ -39,13 +39,6 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
                 (rs, rowNum) -> rs.getLong("object_id"));
     }
 
-//    @Override
-//    public List<Long> getObjectIdsByDetectedObjects(List<DetectedObjectEntity> objectEntities) {
-//        return namedParameterJdbcTemplate.query("SELECT (object_id) FROM objects WHERE object IN (:objects)",
-//                new MapSqlParameterSource("objects", objectEntity.getObject()),
-//                (rs, rowNum) -> rs.);
-//    }
-
     @Override
     public int save(DetectedObjectEntity detectedObjectEntity) {
         return 0;

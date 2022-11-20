@@ -6,6 +6,7 @@ import com.imageservice.entity.DetectedObjectEntity;
 import com.imageservice.entity.ImageEntity;
 import com.imageservice.model.Image;
 import com.imageservice.model.PostResponse;
+import com.imageservice.repository.JdbcImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +21,12 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class ImageService {
 
-//    @Autowired
-//    private ImageRepository imageRepository;
-
-//    @Autowired
-//    private ImageRepository imageRepository;
-//
-//    @Autowired
-//    private DetectedObjectRepository objectRepository;
+    @Autowired
+    JdbcImageRepository imageRepository;
 
     @Autowired
     private VisionService visionService;
 
-    // example on using the repository
-//    public List<Image> getAllImages() {
-//        return imageRepository.findAll();
-//    }
-
-    // logic to generate label
     private String generateLabel() {
         String filename = "";
         String randomChars = RandomStringUtils.randomAlphanumeric(16);
@@ -53,7 +42,6 @@ public class ImageService {
         try {
             // TODO Uncomment when ready to test with api
             List<AnnotateImageResponse> response =  visionService.getImageAnnotations(image.getFilePath(), image.getImageUrl()).get();
-//             map response from vision service to list of objects using streaming api
 
             List<EntityAnnotation> entityAnnotations = response.get(0).getLabelAnnotationsList();
 
@@ -64,11 +52,6 @@ public class ImageService {
                         .build();
                 detectedObjects.add(detectedObject);
             }
-//        detectedObjects.add("cat");
-//        detectedObjects.add("kitten");
-//        detectedObjects.add("villain");
-
-
 
         } catch (ExecutionException | InterruptedException e) {
             System.out.print("Error getting response from vision service ");
@@ -79,7 +62,6 @@ public class ImageService {
         return detectedObjects;
     }
 
-    // logic to get annotations
     public ImageEntity analyzeImage(Image image, boolean enableDetection) {
 
         ImageEntity analyzedImage = ImageEntity.builder().build();
@@ -98,29 +80,11 @@ public class ImageService {
             analyzedImage.setDetectedObjects(detectedObjects);
         }
 
-        // map image to entity and save
-//        List<String> objects = image.getObjectsDetected();
-//        List<DetectedObjectEntity> detectedObjectEntities = new ArrayList<>();
-//
-//        for(String object : objects) {
-//            DetectedObjectEntity detectedObject = DetectedObjectEntity.builder().object(object).build();
-//            detectedObjectEntities.add(detectedObject);
-////            objectRepository.save(detectedObject);
-//        }
-
         return analyzedImage;
-
-//        imageRepository.save(imageEntity);
-
-
-//        return PostResponse.builder()
-//                .imageId(1234L)
-//                .label(image.getLabel())
-//                .detectedObjects(image.getObjectsDetected())
-//                .build();
     }
 
-
-    // logic to save to the db
+//    public ImageEntity persistImage() {
+//
+//    }
 
 }

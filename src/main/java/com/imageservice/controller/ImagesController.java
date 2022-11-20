@@ -17,17 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
 public class ImagesController {
-
-//    @Autowired
-//    @NonNull
-//    private VisionService visionService;
 
     @Autowired
     @NonNull
@@ -36,10 +31,6 @@ public class ImagesController {
     @Autowired
     @NonNull
     private JdbcImageRepository imageRepository;
-//
-//    @Autowired
-//    @NonNull
-//    private DetectedObjectRepository detectedObjectRepository;
 
     @GetMapping(
             path = "/images",
@@ -55,11 +46,6 @@ public class ImagesController {
             List<Image> imagesWithObjects = new ArrayList<>();
 
             for (ImageEntity imageEntity : imageEntities) {
-//            List<String> imageObjects = Collections.singletonList(
-//                    imageEntity.getDetectedObjects()
-//                            .stream()
-//                            .map(detectedObject -> detectedObject.getObjectId().toString())
-//                            .toString());
                 List<String> imageObjects = new ArrayList<>();
                 for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
                     imageObjects.add(detectedObject.getObject());
@@ -84,11 +70,6 @@ public class ImagesController {
         List<Image> images = new ArrayList<>();
 
         for (ImageEntity imageEntity : imageEntities) {
-//            List<String> imageObjects = Collections.singletonList(
-//                    imageEntity.getDetectedObjects()
-//                            .stream()
-//                            .map(detectedObject -> detectedObject.getObjectId().toString())
-//                            .toString());
             List<String> imageObjects = new ArrayList<>();
             for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
                 imageObjects.add(detectedObject.getObject());
@@ -147,24 +128,16 @@ public class ImagesController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<PostResponse> postImages(@RequestBody PostRequest request){
-        // Choosing MULTIPLART_FORM_DATA_VALUE because we want to send in a file and possibly a label and objectDetection
 
         System.out.println(request.toString());
         System.out.println(request.getLabel());
         System.out.println(request.getEnableDetection());
         System.out.println(request.getImageUrl());
 
-//        if(request.getImage() == null && request.getImageUri() == null) {
         if(request.getImageUrl() == null && request.getFilePath() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
         }
-
-//        if(request.getImage() != null && request.getImageUri() != null && !request.getImageUri().isEmpty()) {
-//        if(request.getImage() != null) {
-//            // TODO change to bad request
-//            throw new IllegalArgumentException("Only one of image of image uri can be specified");
-//        }
 
 
         Image image = Image.builder()

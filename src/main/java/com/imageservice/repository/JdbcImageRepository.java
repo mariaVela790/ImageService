@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,11 +27,6 @@ public class JdbcImageRepository implements ImageRepository{
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @Override
-    public int count() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM images", Integer.class);
-    }
 
     @Override
     public int update(ImageEntity imageEntity) {
@@ -102,7 +96,6 @@ public class JdbcImageRepository implements ImageRepository{
 
         Long imageId = Objects.requireNonNull(key.getKey()).longValue();
 
-        // save objects and get their ids
         List<Long> objectIds = objectRepository.saveObjectsReturnIds(image.getDetectedObjects());
 
         imageObjectRepository.save(objectIds, imageId);

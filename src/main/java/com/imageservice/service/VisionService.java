@@ -19,8 +19,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class VisionService {
 
-    // TODO be sure to call "close" on the imageClient when done
-
     private Image getImage(String imagePath, String imageUri) {
         try {
             if (imagePath != null) {
@@ -61,7 +59,6 @@ public class VisionService {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    //                  log.error("Error getting response with error: %s", res.getError().getMessage());
                     System.out.format("Error getting response with error: %s%n", res.getError().getMessage());
                 }
 
@@ -73,7 +70,6 @@ public class VisionService {
             }
 
             // TODO split into two methods one for uri and one for file path?
-
 
         } catch (IOException e) {
             log.error("Error reading file");

@@ -9,11 +9,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PostRequest {
-    // object for POST /images the has the following
-    // image file
-    // OR image URL
-    // optional label for the image
-    // option field to enable object detection
     // TODO boil down to use Image class
     private String imageUrl;
 

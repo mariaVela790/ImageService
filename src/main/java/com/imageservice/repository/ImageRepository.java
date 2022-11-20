@@ -9,8 +9,6 @@ import java.util.List;
 @Repository
 public interface ImageRepository {
 
-    int count();
-
     int save(ImageEntity imageEntity);
 
     int update(ImageEntity imageEntity);
@@ -25,11 +23,4 @@ public interface ImageRepository {
 
     ImageEntity saveImageWithObjects(ImageEntity image);
 
-//    List<ImageEntity> findByDe
-
-//    ImageEntity findByImageId(Long imageId);
-//
-//    ImageEntity findAllByDetectedObjects(List<DetectedObjectEntity> detectedObjectEntityList);
-
-//    List<Image> findBy
 }

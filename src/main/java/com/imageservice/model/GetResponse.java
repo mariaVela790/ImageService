@@ -10,6 +10,5 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class GetResponse {
-    // list of Images
     private List<Image> images;
 }

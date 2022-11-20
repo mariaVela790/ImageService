@@ -8,12 +8,6 @@ import java.util.List;
 @Builder
 @Data
 public class Image {
-    // image file OR url
-    // image labels
-//    @Id
-//    @GeneratedValue
-//    private Long imageId;
-
     private Long imageId;
 
     private String filePath;

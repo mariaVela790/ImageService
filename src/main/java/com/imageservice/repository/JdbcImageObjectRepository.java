@@ -22,18 +22,6 @@ public class JdbcImageObjectRepository implements ImageObjectRepository{
     }
 
     @Override
-    public List<Long> getImageIdsbyObjectId(Long objectId) {
-        return namedParameterJdbcTemplate.query("SELECT (image_id) FROM image_objects WHERE object_id = :id",
-                new MapSqlParameterSource("id", objectId),
-                (rs, rowNum) -> rs.getLong("image_id"));
-    }
-
-//    @Override
-//    public List<Long> getImageIdsByObjectIds(List<Long> objectIds) {
-//        return null;
-//    }
-
-    @Override
     public List<Long> getImageIdsByObjectIds(List<Long>  objectIds) {
         return namedParameterJdbcTemplate.query("SELECT (image_id) FROM image_objects WHERE object_id IN (:objectids)",
                 new MapSqlParameterSource("objectids", objectIds),

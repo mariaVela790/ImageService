@@ -15,11 +15,6 @@ public class PostResponse {
     // TODO Knock down to one class instead of PostResponse and Image
     private Long imageId;
 
-//    private Image image;
-//    private String image;
-//
-//    private String imageUrl;
-
     private String label;
 
     private List<String> detectedObjects;
