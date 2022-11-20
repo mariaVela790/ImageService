@@ -2,6 +2,7 @@ package com.imageservice.entity;
 
 import lombok.*;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.List;
 
@@ -31,5 +32,6 @@ public class ImageEntity {
 //            joinColumns = @JoinColumn(name = "image_id"),
 //            inverseJoinColumns = @JoinColumn(name = "object_id")
 //    )
+    @Nullable
     private List<DetectedObjectEntity> detectedObjects;
 }

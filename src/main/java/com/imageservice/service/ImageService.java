@@ -101,7 +101,7 @@ public class ImageService {
 
 
         return PostResponse.builder()
-                .imageId("123456789")
+                .imageId(1234L)
                 .label(image.getLabel())
                 .detectedObjects(image.getObjectsDetected())
                 .build();

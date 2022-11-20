@@ -10,10 +10,11 @@ https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev
 1. Create a free account with AWS
 2. Under IAM section create a security group name `image-db-security-group` with inbound and outbound rules set to allow traffic from anywhere 
 3. Continue to the RDS (Relational Database Service) create a database of type MySQL, check to allow public access, assign the security group `image-db-security-group`, and create an admin user login
-4. Once db is created, test connection using MySQL WorkBench
-5. Use credentials to create application.properties as follows
-```aidl
-spring.datasource.url=jdbc:mysql://your-aws-endpoint.com:3306
+4. Once database is created, test connection using MySQL WorkBench
+5. Create database `images` with tables using commands in `resources/db/db.ddl`
+6. Use credentials to create application.properties as follows
+```
+spring.datasource.url=jdbc:mysql://your-aws-endpoint.com:3306/dbName
 spring.datasource.username=user
 spring.datasource.password=password
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver

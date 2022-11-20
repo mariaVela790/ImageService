@@ -19,6 +19,12 @@ public interface ImageRepository {
 
     List<ImageEntity> findAll();
 
+    ImageEntity findByImageId(Long imageId);
+
+    List<ImageEntity> findImagesByObjects(List<String> objects);
+
+    Long saveImageReturnId(ImageEntity image);
+
 //    List<ImageEntity> findByDe
 
 //    ImageEntity findByImageId(Long imageId);

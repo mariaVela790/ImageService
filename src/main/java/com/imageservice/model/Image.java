@@ -14,6 +14,8 @@ public class Image {
 //    @GeneratedValue
 //    private Long imageId;
 
+    private Long imageId;
+
     private String filePath;
 
     private String imageUrl;

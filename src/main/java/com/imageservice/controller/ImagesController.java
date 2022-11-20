@@ -1,5 +1,7 @@
 package com.imageservice.controller;
 
+import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageEntity;
 import com.imageservice.model.GetResponse;
 import com.imageservice.model.Image;
 import com.imageservice.model.PostRequest;
@@ -14,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -43,12 +47,62 @@ public class ImagesController {
     )
     public ResponseEntity<GetResponse> getImageSearch(@RequestParam(required = false) List<String> objects) {
         if(objects != null) {
-            for(String object : objects) {
-                System.out.println(object);
+            List<ImageEntity> imageEntities = imageRepository.findImagesByObjects(objects);
+            List<Image> imagesWithObjects = new ArrayList<>();
+
+            for (ImageEntity imageEntity : imageEntities) {
+//            List<String> imageObjects = Collections.singletonList(
+//                    imageEntity.getDetectedObjects()
+//                            .stream()
+//                            .map(detectedObject -> detectedObject.getObjectId().toString())
+//                            .toString());
+                List<String> imageObjects = new ArrayList<>();
+                for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
+                    imageObjects.add(detectedObject.getObject());
+                }
+
+                System.out.printf("imageObject first element %s", imageObjects.toString());
+
+                Image img = Image.builder()
+                        .imageId(imageEntity.getImageId())
+                        .label(imageEntity.getLabel())
+                        .objectsDetected(imageObjects)
+                        .build();
+
+                imagesWithObjects.add(img);
             }
+
+            GetResponse response = GetResponse.builder().images(imagesWithObjects).build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        GetResponse getResponse = GetResponse.builder().build();
+        List<ImageEntity> imageEntities = imageRepository.findAll();
+        List<Image> images = new ArrayList<>();
+
+        for (ImageEntity imageEntity : imageEntities) {
+//            List<String> imageObjects = Collections.singletonList(
+//                    imageEntity.getDetectedObjects()
+//                            .stream()
+//                            .map(detectedObject -> detectedObject.getObjectId().toString())
+//                            .toString());
+            List<String> imageObjects = new ArrayList<>();
+            for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
+                imageObjects.add(detectedObject.getObject());
+            }
+
+            System.out.printf("imageObject first element %s", imageObjects.toString());
+
+            Image img = Image.builder()
+                    .imageId(imageEntity.getImageId())
+                    .label(imageEntity.getLabel())
+                    .objectsDetected(imageObjects)
+                    .build();
+
+            images.add(img);
+        }
+
+
+        GetResponse getResponse = GetResponse.builder().images(images).build();
         return new ResponseEntity<>(getResponse, HttpStatus.OK);
     }
 
@@ -56,11 +110,30 @@ public class ImagesController {
             path = "/images/{imageId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<GetResponse> getImage(@PathVariable String imageId) {
-        if (!imageId.isEmpty()){
-            System.out.printf(imageId);
+    public ResponseEntity<GetResponse> getImage(@PathVariable Long imageId) {
+        List<Image> images = new ArrayList<>();
+        if (imageId != null){
+            ImageEntity imageEntity = imageRepository.findByImageId(imageId);
+            List<String> imageObjects = new ArrayList<>();
+
+            if (imageEntity != null) {
+
+                if(imageEntity.getDetectedObjects() != null && !imageEntity.getDetectedObjects().isEmpty()) {
+                    for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
+                        imageObjects.add(detectedObject.getObject());
+                    }
+                }
+                Image img = Image.builder()
+                        .imageId(imageEntity.getImageId())
+                        .label(imageEntity.getLabel())
+                        .objectsDetected(imageObjects)
+                        .build();
+                images.add(img);
+            }
+
+
         }
-        GetResponse getResponse = GetResponse.builder().build();
+        GetResponse getResponse = GetResponse.builder().images(images).build();
         return new ResponseEntity<>(getResponse, HttpStatus.OK);
     }
 
