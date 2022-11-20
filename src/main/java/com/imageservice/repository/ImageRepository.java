@@ -1,11 +1,29 @@
 package com.imageservice.repository;
 
-import com.imageservice.model.Image;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.imageservice.entity.ImageEntity;
+import org.springframework.stereotype.Repository;
 
-public interface ImageRepository extends JpaRepository<Image, Long> {
+import java.util.List;
 
-    Image findByImageId(String imageId);
+
+@Repository
+public interface ImageRepository {
+
+    int count();
+
+    int save(ImageEntity imageEntity);
+
+    int update(ImageEntity imageEntity);
+
+    int deleteById(Long id);
+
+    List<ImageEntity> findAll();
+
+//    List<ImageEntity> findByDe
+
+//    ImageEntity findByImageId(Long imageId);
+//
+//    ImageEntity findAllByDetectedObjects(List<DetectedObjectEntity> detectedObjectEntityList);
 
 //    List<Image> findBy
 }

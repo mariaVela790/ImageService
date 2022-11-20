@@ -6,12 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,6 +71,8 @@ public class VisionService {
                             .forEach((k, v) -> System.out.format("%s : %s%n", k, v.toString()));
                 }
             }
+
+            // TODO split into two methods one for uri and one for file path?
 
 
         } catch (IOException e) {

@@ -4,7 +4,8 @@ import com.imageservice.model.GetResponse;
 import com.imageservice.model.Image;
 import com.imageservice.model.PostRequest;
 import com.imageservice.model.PostResponse;
-import com.imageservice.service.VisionService;
+import com.imageservice.repository.JdbcImageRepository;
+import com.imageservice.service.ImageService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImagesController {
 
+//    @Autowired
+//    @NonNull
+//    private VisionService visionService;
+
     @Autowired
     @NonNull
-    private VisionService visionService;
+    private ImageService imageService;
+
+    @Autowired
+    @NonNull
+    private JdbcImageRepository imageRepository;
+//
+//    @Autowired
+//    @NonNull
+//    private DetectedObjectRepository detectedObjectRepository;
 
     @GetMapping(
             path = "/images",
@@ -62,10 +75,10 @@ public class ImagesController {
         System.out.println(request.toString());
         System.out.println(request.getLabel());
         System.out.println(request.getEnableDetection());
-        System.out.println(request.getImage());
+        System.out.println(request.getImageUrl());
 
 //        if(request.getImage() == null && request.getImageUri() == null) {
-        if(request.getImage() == null) {
+        if(request.getImageUrl() == null && request.getFilePath() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
         }
@@ -78,18 +91,12 @@ public class ImagesController {
 
 
         Image image = Image.builder()
-                .filePath("/file/path")
+                .imageUrl(request.getImageUrl())
+                .filePath(request.getFilePath())
+                .label(request.getLabel())
                 .build();
 
-        PostResponse response = PostResponse.builder()
-                .imageId("123")
-                .image(image)
-                .build();
-
-        // TODO create image service class to hold logic
-        // We send in the file but the pomeranian file will get used
-//        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
-        visionService.getImageAnnotations(request.getImage(), request.getImageUrl());
+        PostResponse response = imageService.analyzeImage(image, request.getEnableDetection());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

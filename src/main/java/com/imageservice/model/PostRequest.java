@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.constraints.NotNull;
 
 @Builder
 @Data
@@ -17,9 +14,10 @@ public class PostRequest {
     // OR image URL
     // optional label for the image
     // option field to enable object detection
-    private String image;
-
+    // TODO boil down to use Image class
     private String imageUrl;
+
+    private String filePath;
 
     private String label;
 
