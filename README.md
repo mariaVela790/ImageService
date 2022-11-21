@@ -28,11 +28,12 @@ spring.jpa.hibernate.ddl-auto=create
 The following is the design for this API. 
 <img width="1225" alt="Screen Shot 2022-11-14 at 9 44 27 PM" src="https://user-images.githubusercontent.com/43353944/202354768-44c20559-148c-4803-bb16-1aad2dc945ee.png">
 
-## Improvements For Future
+## Things to Finish/Add
 1. Finish error handling and create custom exceptions for bad data and empty sql result sets
-2. Finish moving logic to be in service layer 
-3. Add unit testing
+2. Finish moving logic to be in service layer
+3. Add unit testing for controller, imageService, visionService, repositories
 4. Save images by integrating with S3
+5. Create mapper package to use
 
 ## Example Requests and Response
 

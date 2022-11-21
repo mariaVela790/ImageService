@@ -37,19 +37,61 @@ public class ImageService {
     private ImageAnnotationRepository imageAnnotationRepository;
 
     private String generateLabel() {
-        String filename = "";
-        String randomChars = RandomStringUtils.randomAlphanumeric(5);
-        String datetime = Arrays.toString(new Date().toString().split(" "));
-        filename = randomChars + "_" + datetime;
 
-        return filename;
+        return RandomStringUtils.randomAlphanumeric(10);
+    }
+
+
+    private List<Annotation> mapAnnotations(List<ImageAnnotationEntity> annotationEntities) {
+        List<Annotation> annotations = new ArrayList<>();
+
+        for (ImageAnnotationEntity annotation : annotationEntities) {
+            Annotation imageAnnotation = Annotation.builder()
+                    .object(annotation.getObject())
+                    .topicality(annotation.getTopicality())
+                    .score(annotation.getScore())
+                    .build();
+
+            annotations.add(imageAnnotation);
+
+        }
+        return annotations;
+    }
+    private ImageAnnotationEntity mapAnnotationToEntity(Annotation annotation){
+        return ImageAnnotationEntity.builder()
+                .object(annotation.getObject())
+                .topicality(annotation.getTopicality())
+                .score(annotation.getScore())
+                .build();
+    }
+
+    private Image mapImage(ImageEntity imageEntity, List<Annotation> annotations) {
+        return Image.builder()
+                .imageId(imageEntity.getImageId())
+                .label(imageEntity.getLabel())
+                .annotations(annotations)
+                .build();
+    }
+
+    private List<Image> mapImages(List<ImageEntity> imageEntities) {
+        List<Image> images = new ArrayList<>();
+
+        for (ImageEntity imageEntity : imageEntities) {
+            List<Annotation> annotations = new ArrayList<>();
+
+            if (imageEntity.getAnnotations() != null) {
+                annotations = mapAnnotations(imageEntity.getAnnotations());
+            }
+
+            images.add(mapImage(imageEntity, annotations));
+        }
+        return images;
     }
 
     private List<Annotation> getAnalysis(Image image) {
         List<Annotation> annotations = new ArrayList<>();
 
         try {
-            // TODO Uncomment when ready to test with api
             List<AnnotateImageResponse> response =  visionService.getImageAnnotations(image.getFilePath(), image.getImageUrl()).get();
 
             List<EntityAnnotation> entityAnnotations = response.get(0).getLabelAnnotationsList();
@@ -89,24 +131,13 @@ public class ImageService {
             System.out.println("Detection enabled!");
             List<Annotation> annotations = getAnalysis(image);
             List<ImageAnnotationEntity> imageAnnotations = new ArrayList<>();
-            List<DetectedObjectEntity> detectedObjects = new ArrayList<>();
+
+
             for(Annotation annotation : annotations) {
-                ImageAnnotationEntity annotationEntity = ImageAnnotationEntity.builder()
-                        .object(annotation.getObject())
-                        .topicality(annotation.getTopicality())
-                        .score(annotation.getScore())
-                        .build();
-
+                ImageAnnotationEntity annotationEntity = mapAnnotationToEntity(annotation);
                 imageAnnotations.add(annotationEntity);
-                // need to save annotations
-                DetectedObjectEntity detectedObjectEntity = DetectedObjectEntity.builder()
-                        .object(annotation.getObject())
-                        .build();
-
-                detectedObjects.add(detectedObjectEntity);
-
             }
-            analyzedImage.setDetectedObjects(detectedObjects);
+
             analyzedImage.setAnnotations(imageAnnotations);
         }
 
@@ -141,23 +172,10 @@ public class ImageService {
             System.out.println("image not null");
 
             if (imageSaved.getAnnotations() != null) {
-                for (ImageAnnotationEntity annotation : imageSaved.getAnnotations()) {
-                    Annotation imgAnnotation = Annotation.builder()
-                            .object(annotation.getObject())
-                                    .topicality(annotation.getTopicality())
-                                            .score(annotation.getScore()).build();
-
-                    annotations.add(imgAnnotation);
-                }
+                annotations = mapAnnotations(imageSaved.getAnnotations());
             }
 
-            imageResponse = Image.builder()
-                    .imageId(imageSaved.getImageId())
-                    .label(imageSaved.getLabel())
-                    .annotations(annotations)
-                    .build();
-
-            response.add(imageResponse);
+            response.add(mapImage(imageSaved, annotations));
 
         }
         return response;
@@ -172,30 +190,12 @@ public class ImageService {
             List<ImageAnnotationEntity> annotationEntities = new ArrayList<>();
             List<Annotation> annotations = new ArrayList<>();
 
-
             for(Long imageObjectId : imageObjectIds) {
                 annotationEntities.add(imageAnnotationRepository.findByImageObjectId(imageObjectId));
             }
+            annotations = mapAnnotations(annotationEntities);
 
-            for (ImageAnnotationEntity annotationEntity : annotationEntities) {
-                Annotation annotation = Annotation.builder()
-                        .object(annotationEntity.getObject())
-                        .score(annotationEntity.getScore())
-                        .topicality(annotationEntity.getTopicality())
-                        .build();
-
-                annotations.add(annotation);
-            }
-
-
-            if (imageEntity != null) {
-                Image img = Image.builder()
-                        .imageId(imageEntity.getImageId())
-                        .label(imageEntity.getLabel())
-                        .annotations(annotations)
-                        .build();
-                images.add(img);
-            }
+            images.add(mapImage(imageEntity, annotations));
 
         }
 
@@ -206,61 +206,14 @@ public class ImageService {
 
         List<ImageEntity> imageEntities = imageRepository.findImagesByObjects(objects);
 
-        List<Image> imagesWithObjects = new ArrayList<>();
 
-        for (ImageEntity imageEntity : imageEntities) {
-            List<Annotation> annotations = new ArrayList<>();
-            for (ImageAnnotationEntity annotation : imageEntity.getAnnotations()) {
-                Annotation imageAnnotation = Annotation.builder()
-                        .object(annotation.getObject())
-                        .topicality(annotation.getTopicality())
-                        .score(annotation.getScore())
-                        .build();
-
-                annotations.add(imageAnnotation);
-
-            }
-
-
-            Image img = Image.builder()
-                    .imageId(imageEntity.getImageId())
-                    .label(imageEntity.getLabel())
-                    .annotations(annotations)
-                    .build();
-
-            imagesWithObjects.add(img);
-        }
-        return imagesWithObjects;
+        return mapImages(imageEntities);
     }
 
     public List<Image> getImages(){
 
         List<ImageEntity> imageEntities = imageRepository.findAll();
 
-        List<Image> imagesWithObjects = new ArrayList<>();
-
-        for (ImageEntity imageEntity : imageEntities) {
-            List<Annotation> annotations = new ArrayList<>();
-            for (ImageAnnotationEntity annotation : imageEntity.getAnnotations()) {
-                Annotation imageAnnotation = Annotation.builder()
-                        .object(annotation.getObject())
-                        .topicality(annotation.getTopicality())
-                        .score(annotation.getScore())
-                        .build();
-
-                annotations.add(imageAnnotation);
-
-            }
-
-
-            Image img = Image.builder()
-                    .imageId(imageEntity.getImageId())
-                    .label(imageEntity.getLabel())
-                    .annotations(annotations)
-                    .build();
-
-            imagesWithObjects.add(img);
-        }
-        return imagesWithObjects;
+        return mapImages(imageEntities);
     }
 }
