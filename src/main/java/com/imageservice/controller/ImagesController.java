@@ -39,14 +39,13 @@ public class ImagesController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Response> getImageSearch(@Validated @RequestParam(required = false) String objects) {
+        List<Image> images = new ArrayList<>();
+
         if(objects != null) {
-            List<Image> imagesWithObjects = imageService.getImages(cleanUpString(objects));
-
-            Response response = Response.builder().images(imagesWithObjects).build();
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            images = imageService.getImages(cleanUpString(objects));
+        } else {
+            images = imageService.getImages();
         }
-
-        List<Image> images = imageService.getImages();
 
         Response getResponse = Response.builder().images(images).build();
         return new ResponseEntity<>(getResponse, HttpStatus.OK);
