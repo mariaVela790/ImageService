@@ -1,5 +1,5 @@
 # ImageService
-Toy API to take images, determine objects in them and save to a database
+API that takes images, determine objects in them (if enabled) and saves to a database
 
 ## Project Set Up
 This project uses the GCD Vision API when enableDetection is true to detect objects in the image.
