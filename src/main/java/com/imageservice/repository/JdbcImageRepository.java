@@ -3,6 +3,7 @@ package com.imageservice.repository;
 import com.imageservice.entity.DetectedObjectEntity;
 import com.imageservice.entity.ImageAnnotationEntity;
 import com.imageservice.entity.ImageEntity;
+import com.imageservice.model.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -115,5 +116,18 @@ public class JdbcImageRepository implements ImageRepository{
 
         return image;
     }
+
+    @Override
+    public ImageEntity save(Image image) {
+        KeyHolder key = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label) ",
+                new MapSqlParameterSource("label", image.getLabel()), key);
+
+        return ImageEntity.builder()
+                .imageId(Objects.requireNonNull(key.getKey()).longValue())
+                .label(image.getLabel())
+                .build();
+    }
+
 
 }

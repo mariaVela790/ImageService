@@ -121,9 +121,16 @@ public class ImageService {
                 .label(request.getLabel())
                 .build();
 
-        ImageEntity analysisResponse = analyzeImage(image, request.getEnableDetection());
+        ImageEntity imageSaved = ImageEntity.builder().build();
 
-        ImageEntity imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
+        if(request.getEnableDetection()) {
+            ImageEntity analysisResponse = analyzeImage(image, request.getEnableDetection());
+
+            imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
+        } else {
+            imageSaved = imageRepository.save(image);
+        }
+
 
         List<Annotation> annotations = new ArrayList<>();
         List<Image> response = new ArrayList<>();
