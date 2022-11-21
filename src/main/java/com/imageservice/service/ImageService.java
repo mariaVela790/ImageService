@@ -5,10 +5,10 @@ import com.google.cloud.vision.v1.EntityAnnotation;
 import com.imageservice.entity.DetectedObjectEntity;
 import com.imageservice.entity.ImageAnnotationEntity;
 import com.imageservice.entity.ImageEntity;
-import com.imageservice.model.Annotation;
-import com.imageservice.model.Image;
-import com.imageservice.model.PostRequest;
-import com.imageservice.model.PostResponse;
+import com.imageservice.model.*;
+import com.imageservice.repository.DetectedObjectRepository;
+import com.imageservice.repository.ImageAnnotationRepository;
+import com.imageservice.repository.ImageObjectRepository;
 import com.imageservice.repository.JdbcImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -29,11 +30,16 @@ public class ImageService {
 
     @Autowired
     private VisionService visionService;
+    @Autowired
+    private ImageObjectRepository imageObjectRepository;
+
+    @Autowired
+    private ImageAnnotationRepository imageAnnotationRepository;
 
     private String generateLabel() {
         String filename = "";
-        String randomChars = RandomStringUtils.randomAlphanumeric(16);
-        String datetime = new Date().toString();
+        String randomChars = RandomStringUtils.randomAlphanumeric(5);
+        String datetime = Arrays.toString(new Date().toString().split(" "));
         filename = randomChars + "_" + datetime;
 
         return filename;
@@ -107,7 +113,7 @@ public class ImageService {
         return analyzedImage;
     }
 
-    public PostResponse persistImage(PostRequest request) {
+    public List<Image> persistImage(Request request) {
 
         Image image = Image.builder()
                 .imageUrl(request.getImageUrl())
@@ -120,7 +126,8 @@ public class ImageService {
         ImageEntity imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
 
         List<Annotation> annotations = new ArrayList<>();
-        PostResponse response = null;
+        List<Image> response = new ArrayList<>();
+        Image imageResponse = null;
 
         if (imageSaved != null) {
 
@@ -137,14 +144,116 @@ public class ImageService {
                 }
             }
 
-            response = PostResponse.builder()
+            imageResponse = Image.builder()
                     .imageId(imageSaved.getImageId())
                     .label(imageSaved.getLabel())
                     .annotations(annotations)
                     .build();
 
+            response.add(imageResponse);
+
         }
         return response;
     }
 
+    public List<Image> getImage(Long imageId) {
+        List<Image> images = new ArrayList<>();
+        if (imageId != null){
+
+            ImageEntity imageEntity = imageRepository.findByImageId(imageId);
+            List<Long> imageObjectIds = imageObjectRepository.findImageObjectIdByImageId(imageId);
+            List<ImageAnnotationEntity> annotationEntities = new ArrayList<>();
+            List<Annotation> annotations = new ArrayList<>();
+
+
+            for(Long imageObjectId : imageObjectIds) {
+                annotationEntities.add(imageAnnotationRepository.findByImageObjectId(imageObjectId));
+            }
+
+            for (ImageAnnotationEntity annotationEntity : annotationEntities) {
+                Annotation annotation = Annotation.builder()
+                        .object(annotationEntity.getObject())
+                        .score(annotationEntity.getScore())
+                        .topicality(annotationEntity.getTopicality())
+                        .build();
+
+                annotations.add(annotation);
+            }
+
+
+            if (imageEntity != null) {
+                Image img = Image.builder()
+                        .imageId(imageEntity.getImageId())
+                        .label(imageEntity.getLabel())
+                        .annotations(annotations)
+                        .build();
+                images.add(img);
+            }
+
+        }
+
+        return images;
+    }
+
+    public List<Image> getImages(List<String> objects){
+
+        List<ImageEntity> imageEntities = imageRepository.findImagesByObjects(objects);
+
+        List<Image> imagesWithObjects = new ArrayList<>();
+
+        for (ImageEntity imageEntity : imageEntities) {
+            List<Annotation> annotations = new ArrayList<>();
+            for (ImageAnnotationEntity annotation : imageEntity.getAnnotations()) {
+                Annotation imageAnnotation = Annotation.builder()
+                        .object(annotation.getObject())
+                        .topicality(annotation.getTopicality())
+                        .score(annotation.getScore())
+                        .build();
+
+                annotations.add(imageAnnotation);
+
+            }
+
+
+            Image img = Image.builder()
+                    .imageId(imageEntity.getImageId())
+                    .label(imageEntity.getLabel())
+                    .annotations(annotations)
+                    .build();
+
+            imagesWithObjects.add(img);
+        }
+        return imagesWithObjects;
+    }
+
+    public List<Image> getImages(){
+
+        List<ImageEntity> imageEntities = imageRepository.findAll();
+
+        List<Image> imagesWithObjects = new ArrayList<>();
+
+        for (ImageEntity imageEntity : imageEntities) {
+            List<Annotation> annotations = new ArrayList<>();
+            for (ImageAnnotationEntity annotation : imageEntity.getAnnotations()) {
+                Annotation imageAnnotation = Annotation.builder()
+                        .object(annotation.getObject())
+                        .topicality(annotation.getTopicality())
+                        .score(annotation.getScore())
+                        .build();
+
+                annotations.add(imageAnnotation);
+
+            }
+
+
+            Image img = Image.builder()
+                    .imageId(imageEntity.getImageId())
+                    .label(imageEntity.getLabel())
+                    .annotations(annotations)
+                    .build();
+
+            imagesWithObjects.add(img);
+        }
+        return imagesWithObjects;
+    }
 }

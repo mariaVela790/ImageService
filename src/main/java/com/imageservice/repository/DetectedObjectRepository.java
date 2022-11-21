@@ -10,7 +10,10 @@ import java.util.List;
 public interface DetectedObjectRepository {
     List<DetectedObjectEntity> findAllByImageId(Long imageId);
 
-    List<Long> getObjectIdsByObjects(List<String> objects);
+    String findByObjectId(Long objectId);
+    Long findByObject(String object);
+
+    List<Long> findObjectIdsByObjects(List<String> objects);
 
     Long saveObjectReturnId(ImageAnnotationEntity annotation);
 

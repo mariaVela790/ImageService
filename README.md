@@ -28,3 +28,128 @@ spring.jpa.hibernate.ddl-auto=create
 The following is the design for this API. 
 <img width="1225" alt="Screen Shot 2022-11-14 at 9 44 27 PM" src="https://user-images.githubusercontent.com/43353944/202354768-44c20559-148c-4803-bb16-1aad2dc945ee.png">
 
+## Improvements For Future
+1. Finish error handling and create custom exceptions for bad data and empty sql result sets
+2. Finish moving logic to be in service layer 
+3. Add unit testing
+
+## Example Requests and Response
+
+### Request GET
+`http://localhost:8080/images/?objects="bird, feather"`
+
+### Response
+`{
+    "images": [
+            {
+                "imageId": 1,
+                "label": "bird floof",
+                "annotations": [
+                    {
+                    "object": "Bird",
+                    "score": 0.960077,
+                    "topicality": 0.960077
+                    },
+                    {
+                    "object": "Feather",
+                    "score": 0.806098,
+                    "topicality": 0.806098
+                    },
+                ]
+            }
+        ]
+}`
+
+### Request GET
+`http://localhost:8080/images/`
+
+### Response
+`{
+    "images": [
+            {
+                "imageId": 1,
+                "label": "bird floof",
+                "annotations": [
+                    {
+                    "object": "Bird",
+                    "score": 0.960077,
+                    "topicality": 0.960077
+                    },
+                    {
+                    "object": "Feather",
+                    "score": 0.806098,
+                    "topicality": 0.806098
+                    },
+                ]
+            }
+        ]
+}`
+
+### Request POST 
+`{
+"filePath": "/Users/montserratvela/IdeaProjects/hebinterview/src/main/resources/images/flower.jpeg",
+"label": "",
+"enableDetection": true
+}`
+
+### Response
+`{
+"images": [
+    {
+        "imageId": 3,
+        "label": "7y74H_[Mon, Nov, 21, 00:11:55, CST, 2022]",
+        "annotations": [
+            {
+                "object": "Flower",
+                "score": 0.9710453,
+                "topicality": 0.9710453
+            },
+            {
+                "object": "Plant",
+                "score": 0.958386,
+                "topicality": 0.958386
+            },
+            {
+                "object": "Petal",
+                "score": 0.90035725,
+                "topicality": 0.90035725
+            },
+            {
+                "object": "Annual plant",
+                "score": 0.74014735,
+                "topicality": 0.74014735
+            },
+            {
+                "object": "Flowering plant",
+                "score": 0.7377718,
+                "topicality": 0.7377718
+            },
+            {
+                "object": "Terrestrial plant",
+                "score": 0.7356099,
+                "topicality": 0.7356099
+            },
+            {
+                "object": "Close-up",
+                "score": 0.7152714,
+                "topicality": 0.7152714
+            },
+            {
+                "object": "Forb",
+                "score": 0.68906724,
+                "topicality": 0.68906724
+            },
+            {
+                "object": "Pollen",
+                "score": 0.68214023,
+                "topicality": 0.68214023
+            },
+            {
+                "object": "Macro photography",
+                "score": 0.68012255,
+                "topicality": 0.68012255
+            }
+        ]
+        }
+    ]
+}`

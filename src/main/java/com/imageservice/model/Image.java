@@ -1,5 +1,6 @@
 package com.imageservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +11,10 @@ import java.util.List;
 public class Image {
     private Long imageId;
 
+    @JsonIgnore
     private String filePath;
 
+    @JsonIgnore
     private String imageUrl;
 
     private String label;

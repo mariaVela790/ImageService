@@ -24,7 +24,7 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
 
     @Override
     public List<DetectedObjectEntity> findAllByImageId(Long imageId) {
-        List<Long> objectIds = imageObjectRepository.getObjectIdsByImageId(imageId);
+        List<Long> objectIds = imageObjectRepository.findObjectIdsByImageId(imageId);
 
         return namedParameterJdbcTemplate.query("SELECT * FROM objects WHERE object_id IN (:objectIds)",
                 new MapSqlParameterSource("objectIds", objectIds),
@@ -34,7 +34,22 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
     }
 
     @Override
-    public List<Long> getObjectIdsByObjects(List<String> objects) {
+    public String findByObjectId(Long objectId) {
+        return namedParameterJdbcTemplate.queryForObject("SELECT (object) FROM objects WHERE object_id = :objectid",
+                new MapSqlParameterSource("objectid", objectId),
+                (rs, rowNum) -> rs.getString("object")
+                );
+    }
+
+    @Override
+    public Long findByObject(String object) {
+        return namedParameterJdbcTemplate.queryForObject("SELECT (object_id) FROM objects WHERE object = :object",
+                new MapSqlParameterSource("object", object),
+                (rs, rowNum) -> rs.getLong("object"));
+    }
+
+    @Override
+    public List<Long> findObjectIdsByObjects(List<String> objects) {
         return namedParameterJdbcTemplate.query("SELECT (object_id) FROM objects WHERE object IN (:objects)",
                 new MapSqlParameterSource("objects", objects),
                 (rs, rowNum) -> rs.getLong("object_id"));

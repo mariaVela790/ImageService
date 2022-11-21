@@ -13,6 +13,8 @@ public interface ImageAnnotationRepository {
 
     int save(ImageAnnotationEntity imageAnnotation, Long imageObjectId);
 
+    ImageAnnotationEntity findByImageObjectId(Long imageObjectId);
+
     List<ImageAnnotationEntity> findByImageId(Long imageId);
 
 }

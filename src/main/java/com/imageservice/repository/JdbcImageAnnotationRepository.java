@@ -43,14 +43,28 @@ public class JdbcImageAnnotationRepository implements ImageAnnotationRepository{
     }
 
     @Override
-    public List<ImageAnnotationEntity> findByImageId(Long imageId) {
-        return namedParameterJdbcTemplate.query("SELECT * FROM image_annotations WHERE image_id = :imageid",
-                new MapSqlParameterSource("imageid", imageId),
+    public ImageAnnotationEntity findByImageObjectId(Long imageObjectId) {
+        return namedParameterJdbcTemplate.queryForObject("SELECT * FROM image_annotations WHERE image_object_id = :imageobjectid",
+                new MapSqlParameterSource("imageobjectid", imageObjectId),
                 (rs, rowNum) -> ImageAnnotationEntity.builder()
-                        .objectId(rs.getLong("object_id"))
-                        .imageId(rs.getLong("image_id"))
+                        .imageId(rs.getLong("image_object_id"))
+                        .object(
+                                objectRepository.findByObjectId(imageObjectRepository.findObjectIdByImageObjectId(rs.getLong("image_object_id")))
+                        )
                         .score(rs.getFloat("score"))
                         .topicality(rs.getFloat("topicality"))
                         .build());
+    }
+
+    @Override
+    public List<ImageAnnotationEntity> findByImageId(Long imageId) {
+        List<Long> imageObjectIds = imageObjectRepository.findImageObjectIdByImageId(imageId);
+        List<ImageAnnotationEntity> annotationEntities = new ArrayList<>();
+
+        for (Long imageObjectId : imageObjectIds) {
+            annotationEntities.add(findByImageObjectId(imageObjectId));
+        }
+
+        return annotationEntities;
     }
 }

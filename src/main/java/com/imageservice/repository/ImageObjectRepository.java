@@ -7,9 +7,14 @@ import java.util.List;
 @Repository
 public interface ImageObjectRepository {
 
-    List<Long> getObjectIdsByImageId(Long imageId);
+    List<Long> findObjectIdsByImageId(Long imageId);
 
-    List<Long> getImageIdsByObjectIds(List<Long> objectIds);
+    List<Long> findImageIdsByObjectIds(List<Long> objectIds);
+    Long findObjectIdByImageObjectId(Long imageObjectIdL);
+
+    List<Long> findImageObjectIdByImageId(Long imageId);
+
+    List<Long> findImageIdsByObjectId(Long objectId);
 
     Long saveReturnImageObjectId(Long objectId, Long imageId);
 

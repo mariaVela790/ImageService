@@ -9,6 +9,6 @@ import java.util.List;
 @Builder
 @Data
 @AllArgsConstructor
-public class GetResponse {
+public class Response {
     private List<Image> images;
 }
