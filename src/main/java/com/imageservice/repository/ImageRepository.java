@@ -1,6 +1,7 @@
 package com.imageservice.repository;
 
 import com.imageservice.entity.ImageEntity;
+import com.imageservice.model.Image;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface ImageRepository {
     List<ImageEntity> findImagesByObjects(List<String> objects);
 
     ImageEntity saveImageWithObjects(ImageEntity image);
+
+    ImageEntity save(Image image);
 
 }
