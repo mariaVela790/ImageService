@@ -40,16 +40,6 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
                 (rs, rowNum) -> rs.getLong("object_id"));
     }
 
-//    @Override
-//    public int save(DetectedObjectEntity detectedObjectEntity) {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int saveObjects(List<DetectedObjectEntity> detectedObjectEntities) {
-//        return 0;
-//    }
-
     @Override
     public Long saveObjectReturnId(ImageAnnotationEntity annotation) {
         KeyHolder key = new GeneratedKeyHolder();
@@ -71,15 +61,6 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
 
         return annotation;
     }
-
-//    @Override
-//    public List<Long> saveObjectsReturnIds(List<ImageAnnotationEntity> annotationEntities) {
-//        List<Long> savedObjectIds = new ArrayList<>();
-//        for (ImageAnnotationEntity annotationEntity : annotationEntities) {
-//            savedObjectIds.add(saveObjectReturnId(annotationEntity));
-//        }
-//        return savedObjectIds;
-//    }
 
     @Override
     public List<ImageAnnotationEntity> saveObjectsReturnsAnnotations(List<ImageAnnotationEntity> annotationEntities) {

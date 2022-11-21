@@ -42,69 +42,6 @@ public class JdbcImageAnnotationRepository implements ImageAnnotationRepository{
                 mapSqlParameterSource);
     }
 
-//    @Override
-//    public Long saveObjectReturnId(ImageAnnotationEntity annotation) {
-//        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-//        mapSqlParameterSource.addValue("image_id", annotation.getImageId());
-//        mapSqlParameterSource.addValue("object_id", annotation.getObjectId());
-//        mapSqlParameterSource.addValue("score", annotation.getScore());
-//        mapSqlParameterSource.addValue("topicality", annotation.getTopicality());
-//
-//        KeyHolder key = new GeneratedKeyHolder();
-//
-//        namedParameterJdbcTemplate.update("INSERT INTO image_annotations (image_id, object_id, score, topicality) VALUES (:image_id, :object_id, :score, :topicality)",
-//                mapSqlParameterSource,
-//                key);
-//
-//        return Objects.requireNonNull(key.getKey()).longValue();
-//    }
-
-//    @Override
-//    public DetectedObjectEntity saveAnnotationReturnObject(ImageAnnotationEntity annotation) {
-////        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-////        mapSqlParameterSource.addValue("image_id", annotation.getImageId());
-////        mapSqlParameterSource.addValue("object_id", annotation.getObjectId());
-////        mapSqlParameterSource.addValue("score", annotation.getScore());
-////        mapSqlParameterSource.addValue("topicality", annotation.getTopicality());
-////
-////        KeyHolder key = new GeneratedKeyHolder();
-////
-////        namedParameterJdbcTemplate.update("INSERT INTO image_annotations (image_id, object_id, score, topicality) VALUES (:image_id, :object_id, :score, :topicality)",
-////                mapSqlParameterSource,
-////                key);
-//
-//        return DetectedObjectEntity.builder().build();
-//    }
-
-//    @Override
-//    public List<DetectedObjectEntity> saveAnnotationsReturnObjects(List<ImageAnnotationEntity> annotationEntities) {
-//        List<DetectedObjectEntity> detectedObjectEntities = new ArrayList<>();
-//
-////        for (ImageAnnotationEntity annotationEntity : annotationEntities) {
-////            saveObjectReturnId()
-////        }
-//
-//        return null;
-//    }
-
-//    @Override
-//    public int save(List<ImageAnnotationEntity> imageAnnotations) {
-//        for (ImageAnnotationEntity imageAnnotation : imageAnnotations) {
-////            save(imageAnnotation);
-//        }
-//        return 0;
-//    }
-//
-//    @Override
-//    public int update(ImageAnnotationEntity imageEntity) {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int deleteById(Long imageId, Long objectId) {
-//        return 0;
-//    }
-
     @Override
     public List<ImageAnnotationEntity> findByImageId(Long imageId) {
         return namedParameterJdbcTemplate.query("SELECT * FROM image_annotations WHERE image_id = :imageid",

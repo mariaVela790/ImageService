@@ -32,15 +32,6 @@ public class JdbcImageRepository implements ImageRepository{
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-//    @Override
-//    public int update(ImageEntity imageEntity) {
-//        return 0;
-//    }
-
-//    @Override
-//    public int deleteById(Long id) {
-//        return 0;
-//    }
 
     @Override
     public List<ImageEntity> findAll() {
@@ -83,12 +74,6 @@ public class JdbcImageRepository implements ImageRepository{
                             .build());
     }
 
-//    @Override
-//    public int save(ImageEntity image) {
-//        return namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label)",
-//                new MapSqlParameterSource("label", image.getLabel()));
-//    }
-
     @Override
     public ImageEntity saveImageWithObjects(ImageEntity image) {
         KeyHolder key = new GeneratedKeyHolder();
@@ -114,10 +99,5 @@ public class JdbcImageRepository implements ImageRepository{
 
         return image;
     }
-
-//    @Override
-//    public Long saveReturnId(ImageEntity image) {
-//        return null;
-//    }
 
 }

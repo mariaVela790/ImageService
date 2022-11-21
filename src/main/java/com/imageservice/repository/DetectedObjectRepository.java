@@ -12,14 +12,9 @@ public interface DetectedObjectRepository {
 
     List<Long> getObjectIdsByObjects(List<String> objects);
 
-//    int save(DetectedObjectEntity detectedObjectEntity);
-
-//    int saveObjects(List<DetectedObjectEntity> detectedObjectEntities);
-
     Long saveObjectReturnId(ImageAnnotationEntity annotation);
 
     ImageAnnotationEntity saveObjectReturnAnnotation(ImageAnnotationEntity annotation);
 
-//    List<Long> saveObjectsReturnIds(List<ImageAnnotationEntity> annotationEntities);
     List<ImageAnnotationEntity> saveObjectsReturnsAnnotations(List<ImageAnnotationEntity> annotationEntities);
 }

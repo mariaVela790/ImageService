@@ -47,12 +47,4 @@ public class JdbcImageObjectRepository implements ImageObjectRepository {
         return Objects.requireNonNull(key.getKey()).longValue();
     }
 
-    //TODO get rid of this method - no longer needed
-//    @Override
-//    public int save(List<Long> objectIds, Long imageId) {
-//        for (Long objectId : objectIds) {
-//            save(objectId, imageId);
-//        }
-//        return 0;
-//    }
 }
