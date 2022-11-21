@@ -40,7 +40,7 @@ The following is the design for this API.
 `http://localhost:8080/images/?objects="bird, feather"`
 
 ### Response
-`{
+````json{
     "images": [
             {
                 "imageId": 1,
