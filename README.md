@@ -32,6 +32,7 @@ The following is the design for this API.
 1. Finish error handling and create custom exceptions for bad data and empty sql result sets
 2. Finish moving logic to be in service layer 
 3. Add unit testing
+4. Save images by integrating with S3
 
 ## Example Requests and Response
 

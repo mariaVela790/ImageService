@@ -42,7 +42,6 @@ public class ImagesController {
         if(objects != null) {
             String cleanString = objects.replaceAll("\"", "");
             String[] strSplit = cleanString.split(",");
-            sout
 
             List<String> objectList = new ArrayList<String>(Arrays.asList(strSplit));
             List<Image> imagesWithObjects = imageService.getImages(objectList);
@@ -80,6 +79,11 @@ public class ImagesController {
         if(request.getImageUrl() == null && request.getFilePath() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
+        }
+
+        if(request.getImageUrl() != null && request.getFilePath() != null) {
+            // TODO change to bad request
+            throw new IllegalArgumentException("Only one of file path or url can be specified.");
         }
 
         Response response = Response.builder()
