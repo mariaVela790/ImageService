@@ -40,11 +40,7 @@ public class ImagesController {
     )
     public ResponseEntity<Response> getImageSearch(@Validated @RequestParam(required = false) String objects) {
         if(objects != null) {
-            String cleanString = objects.replaceAll("\"", "");
-            String[] strSplit = cleanString.split(",");
-
-            List<String> objectList = new ArrayList<String>(Arrays.asList(strSplit));
-            List<Image> imagesWithObjects = imageService.getImages(objectList);
+            List<Image> imagesWithObjects = imageService.getImages(cleanUpString(objects));
 
             Response response = Response.builder().images(imagesWithObjects).build();
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -92,5 +88,13 @@ public class ImagesController {
 
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<String> cleanUpString(String objects) {
+        String cleanString = objects.replaceAll("\"", "");
+        String[] strSplit = cleanString.split(",");
+
+        List<String> objectList = new ArrayList<String>(Arrays.asList(strSplit));
+        return objectList;
     }
 }
