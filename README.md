@@ -91,7 +91,7 @@ The following is the design for this API.
 }
 ````
 
-### Request POST 
+## Request POST 
 ````JSON
 {
 "filePath": "/Users/montserratvela/IdeaProjects/hebinterview/src/main/resources/images/flower.jpeg",
@@ -100,7 +100,7 @@ The following is the design for this API.
 }
 ````
 
-### Response
+## Response
 ````JSON
 {
 "images": [
@@ -159,6 +159,76 @@ The following is the design for this API.
                 "topicality": 0.68012255
             }
         ]
+        }
+    ]
+}
+````
+## Request GET
+
+`
+http://localhost:8080/images/4
+`
+
+
+## Response
+````JSON
+{
+    "images": [
+        {
+            "imageId": 4,
+            "label": "folwer_photo",
+            "annotations": [
+                {
+                    "object": "Flower",
+                    "score": 0.971045,
+                    "topicality": 0.971045
+                },
+                {
+                    "object": "Plant",
+                    "score": 0.958386,
+                    "topicality": 0.958386
+                },
+                {
+                    "object": "Petal",
+                    "score": 0.900357,
+                    "topicality": 0.900357
+                },
+                {
+                    "object": "Annual plant",
+                    "score": 0.740147,
+                    "topicality": 0.740147
+                },
+                {
+                    "object": "Flowering plant",
+                    "score": 0.737772,
+                    "topicality": 0.737772
+                },
+                {
+                    "object": "Terrestrial plant",
+                    "score": 0.73561,
+                    "topicality": 0.73561
+                },
+                {
+                    "object": "Close-up",
+                    "score": 0.715271,
+                    "topicality": 0.715271
+                },
+                {
+                    "object": "Forb",
+                    "score": 0.689067,
+                    "topicality": 0.689067
+                },
+                {
+                    "object": "Pollen",
+                    "score": 0.68214,
+                    "topicality": 0.68214
+                },
+                {
+                    "object": "Macro photography",
+                    "score": 0.680123,
+                    "topicality": 0.680123
+                }
+            ]
         }
     ]
 }
