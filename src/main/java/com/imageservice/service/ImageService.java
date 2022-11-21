@@ -3,8 +3,11 @@ package com.imageservice.service;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageAnnotationEntity;
 import com.imageservice.entity.ImageEntity;
+import com.imageservice.model.Annotation;
 import com.imageservice.model.Image;
+import com.imageservice.model.PostRequest;
 import com.imageservice.model.PostResponse;
 import com.imageservice.repository.JdbcImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +39,8 @@ public class ImageService {
         return filename;
     }
 
-    private List<DetectedObjectEntity> getDetectedObjects(Image image) {
-        List<DetectedObjectEntity> detectedObjects = new ArrayList<>();
+    private List<Annotation> getAnalysis(Image image) {
+        List<Annotation> annotations = new ArrayList<>();
 
         try {
             // TODO Uncomment when ready to test with api
@@ -47,10 +50,12 @@ public class ImageService {
 
 
             for (EntityAnnotation entityAnnotation : entityAnnotations) {
-                DetectedObjectEntity detectedObject = DetectedObjectEntity.builder()
+                Annotation annotation = Annotation.builder()
                         .object(entityAnnotation.getDescription())
+                        .score(entityAnnotation.getScore())
+                        .topicality(entityAnnotation.getTopicality())
                         .build();
-                detectedObjects.add(detectedObject);
+                annotations.add(annotation);
             }
 
         } catch (ExecutionException | InterruptedException e) {
@@ -59,10 +64,10 @@ public class ImageService {
 
         }
 
-        return detectedObjects;
+        return annotations;
     }
 
-    public ImageEntity analyzeImage(Image image, boolean enableDetection) {
+    private ImageEntity analyzeImage(Image image, boolean enableDetection) {
 
         ImageEntity analyzedImage = ImageEntity.builder().build();
 
@@ -76,15 +81,70 @@ public class ImageService {
 
         if (enableDetection) {
             System.out.println("Detection enabled!");
-            List<DetectedObjectEntity> detectedObjects = getDetectedObjects(image);
+            List<Annotation> annotations = getAnalysis(image);
+            List<ImageAnnotationEntity> imageAnnotations = new ArrayList<>();
+            List<DetectedObjectEntity> detectedObjects = new ArrayList<>();
+            for(Annotation annotation : annotations) {
+                ImageAnnotationEntity annotationEntity = ImageAnnotationEntity.builder()
+                        .object(annotation.getObject())
+                        .topicality(annotation.getTopicality())
+                        .score(annotation.getScore())
+                        .build();
+
+                imageAnnotations.add(annotationEntity);
+                // need to save annotations
+                DetectedObjectEntity detectedObjectEntity = DetectedObjectEntity.builder()
+                        .object(annotation.getObject())
+                        .build();
+
+                detectedObjects.add(detectedObjectEntity);
+
+            }
             analyzedImage.setDetectedObjects(detectedObjects);
+            analyzedImage.setAnnotations(imageAnnotations);
         }
 
         return analyzedImage;
     }
 
-//    public ImageEntity persistImage() {
-//
-//    }
+    public PostResponse persistImage(PostRequest request) {
+
+        Image image = Image.builder()
+                .imageUrl(request.getImageUrl())
+                .filePath(request.getFilePath())
+                .label(request.getLabel())
+                .build();
+
+        ImageEntity analysisResponse = analyzeImage(image, request.getEnableDetection());
+
+        ImageEntity imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
+
+        List<Annotation> annotations = new ArrayList<>();
+        PostResponse response = null;
+
+        if (imageSaved != null) {
+
+            System.out.println("image not null");
+
+            if (imageSaved.getAnnotations() != null) {
+                for (ImageAnnotationEntity annotation : imageSaved.getAnnotations()) {
+                    Annotation imgAnnotation = Annotation.builder()
+                            .object(annotation.getObject())
+                                    .topicality(annotation.getTopicality())
+                                            .score(annotation.getScore()).build();
+
+                    annotations.add(imgAnnotation);
+                }
+            }
+
+            response = PostResponse.builder()
+                    .imageId(imageSaved.getImageId())
+                    .label(imageSaved.getLabel())
+                    .annotations(annotations)
+                    .build();
+
+        }
+        return response;
+    }
 
 }

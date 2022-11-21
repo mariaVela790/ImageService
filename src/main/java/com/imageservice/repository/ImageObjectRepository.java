@@ -11,7 +11,7 @@ public interface ImageObjectRepository {
 
     List<Long> getImageIdsByObjectIds(List<Long> objectIds);
 
-    int save(Long objectId, Long imageId);
+    Long saveReturnImageObjectId(Long objectId, Long imageId);
 
-    int save(List<Long> objectIds, Long imageId);
+//    int save(List<Long> objectIds, Long imageId);
 }

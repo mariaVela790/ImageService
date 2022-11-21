@@ -45,22 +45,22 @@ public class ImagesController {
             List<ImageEntity> imageEntities = imageRepository.findImagesByObjects(objects);
             List<Image> imagesWithObjects = new ArrayList<>();
 
-            for (ImageEntity imageEntity : imageEntities) {
-                List<String> imageObjects = new ArrayList<>();
-                for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
-                    imageObjects.add(detectedObject.getObject());
-                }
-
-                System.out.printf("imageObject first element %s", imageObjects.toString());
-
-                Image img = Image.builder()
-                        .imageId(imageEntity.getImageId())
-                        .label(imageEntity.getLabel())
-                        .objectsDetected(imageObjects)
-                        .build();
-
-                imagesWithObjects.add(img);
-            }
+//            for (ImageEntity imageEntity : imageEntities) {
+//                List<String> imageObjects = new ArrayList<>();
+//                for (DetectedObjectEntity detectedObject : imageEntity.getDetectedObjects()) {
+//                    imageObjects.add(detectedObject.getObject());
+//                }
+//
+//                System.out.printf("imageObject first element %s", imageObjects.toString());
+//
+//                Image img = Image.builder()
+//                        .imageId(imageEntity.getImageId())
+//                        .label(imageEntity.getLabel())
+//                        .annotations(imageObjects)
+//                        .build();
+//
+//                imagesWithObjects.add(img);
+//            }
 
             GetResponse response = GetResponse.builder().images(imagesWithObjects).build();
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -80,7 +80,6 @@ public class ImagesController {
             Image img = Image.builder()
                     .imageId(imageEntity.getImageId())
                     .label(imageEntity.getLabel())
-                    .objectsDetected(imageObjects)
                     .build();
 
             images.add(img);
@@ -111,7 +110,6 @@ public class ImagesController {
                 Image img = Image.builder()
                         .imageId(imageEntity.getImageId())
                         .label(imageEntity.getLabel())
-                        .objectsDetected(imageObjects)
                         .build();
                 images.add(img);
             }
@@ -129,45 +127,12 @@ public class ImagesController {
     )
     public ResponseEntity<PostResponse> postImages(@RequestBody PostRequest request){
 
-        System.out.println(request.toString());
-        System.out.println(request.getLabel());
-        System.out.println(request.getEnableDetection());
-        System.out.println(request.getImageUrl());
-
         if(request.getImageUrl() == null && request.getFilePath() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
         }
 
-
-        Image image = Image.builder()
-                .imageUrl(request.getImageUrl())
-                .filePath(request.getFilePath())
-                .label(request.getLabel())
-                .build();
-
-        ImageEntity analysisResponse = imageService.analyzeImage(image, request.getEnableDetection());
-        ImageEntity imageSaved = imageRepository.saveImageWithObjects(analysisResponse);
-        List<String> objects = new ArrayList<>();
-        PostResponse response = null;
-
-        if (imageSaved != null) {
-
-            System.out.println("image not null");
-
-            if (imageSaved.getDetectedObjects() != null) {
-                for (DetectedObjectEntity detectedObject : imageSaved.getDetectedObjects()) {
-                    objects.add(detectedObject.getObject());
-                }
-            }
-
-            response = PostResponse.builder()
-                    .imageId(imageSaved.getImageId())
-                    .label(imageSaved.getLabel())
-                    .detectedObjects(objects)
-                    .build();
-
-        }
+        PostResponse response = imageService.persistImage(request);
 
 
         return new ResponseEntity<>(response, HttpStatus.OK);

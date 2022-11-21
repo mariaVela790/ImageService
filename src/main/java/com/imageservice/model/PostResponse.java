@@ -17,6 +17,6 @@ public class PostResponse {
 
     private String label;
 
-    private List<String> detectedObjects;
+    private List<Annotation> annotations;
 
 }

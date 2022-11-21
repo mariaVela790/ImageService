@@ -9,11 +9,11 @@ import java.util.List;
 @Repository
 public interface ImageRepository {
 
-    int save(ImageEntity imageEntity);
+//    int save(ImageEntity imageEntity);
 
-    int update(ImageEntity imageEntity);
+//    int update(ImageEntity imageEntity);
 
-    int deleteById(Long id);
+//    int deleteById(Long id);
 
     List<ImageEntity> findAll();
 
@@ -22,5 +22,7 @@ public interface ImageRepository {
     List<ImageEntity> findImagesByObjects(List<String> objects);
 
     ImageEntity saveImageWithObjects(ImageEntity image);
+
+//    Long saveReturnId(ImageEntity image);
 
 }

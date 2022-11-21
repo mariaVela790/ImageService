@@ -17,5 +17,5 @@ public class Image {
     private String label;
 
     // TODO make sure the annotations are null if object detection was not enabled
-    private List<String> objectsDetected;
+    private List<Annotation> annotations;
 }

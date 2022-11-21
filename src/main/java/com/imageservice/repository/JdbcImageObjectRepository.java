@@ -3,12 +3,15 @@ package com.imageservice.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
-public class JdbcImageObjectRepository implements ImageObjectRepository{
+public class JdbcImageObjectRepository implements ImageObjectRepository {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -30,20 +33,26 @@ public class JdbcImageObjectRepository implements ImageObjectRepository{
     }
 
     @Override
-    public int save(Long objectId, Long imageId) {
+    public Long saveReturnImageObjectId(Long objectId, Long imageId) {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
         mapSqlParameterSource.addValue("object_id", objectId);
         mapSqlParameterSource.addValue("image_id", imageId);
-        return namedParameterJdbcTemplate.update("INSERT INTO image_objects (object_id,image_id) VALUES (:object_id, :image_id)",
-                mapSqlParameterSource
-                );
+
+        KeyHolder key = new GeneratedKeyHolder();
+
+        namedParameterJdbcTemplate.update("INSERT INTO image_objects (object_id,image_id) VALUES (:object_id, :image_id)",
+                mapSqlParameterSource,
+                key);
+
+        return Objects.requireNonNull(key.getKey()).longValue();
     }
 
-    @Override
-    public int save(List<Long> objectIds, Long imageId) {
-        for (Long objectId : objectIds) {
-            save(objectId, imageId);
-        }
-        return 0;
-    }
+    //TODO get rid of this method - no longer needed
+//    @Override
+//    public int save(List<Long> objectIds, Long imageId) {
+//        for (Long objectId : objectIds) {
+//            save(objectId, imageId);
+//        }
+//        return 0;
+//    }
 }

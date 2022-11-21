@@ -1,5 +1,6 @@
 package com.imageservice.entity;
 
+import com.imageservice.model.Annotation;
 import lombok.*;
 
 import javax.annotation.Nullable;
@@ -21,4 +22,7 @@ public class ImageEntity {
 
     @Nullable
     private List<DetectedObjectEntity> detectedObjects;
+
+    @Nullable
+    private List<ImageAnnotationEntity> annotations;
 }

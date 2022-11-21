@@ -1,6 +1,7 @@
 package com.imageservice.repository;
 
 import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageAnnotationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -39,32 +40,54 @@ public class JdbcDetectedObjectRepository implements DetectedObjectRepository{
                 (rs, rowNum) -> rs.getLong("object_id"));
     }
 
-    @Override
-    public int save(DetectedObjectEntity detectedObjectEntity) {
-        return 0;
-    }
+//    @Override
+//    public int save(DetectedObjectEntity detectedObjectEntity) {
+//        return 0;
+//    }
+//
+//    @Override
+//    public int saveObjects(List<DetectedObjectEntity> detectedObjectEntities) {
+//        return 0;
+//    }
 
     @Override
-    public int saveObjects(List<DetectedObjectEntity> detectedObjectEntities) {
-        return 0;
-    }
-
-    @Override
-    public Long saveObjectReturnId(DetectedObjectEntity detectedObjectEntity) {
+    public Long saveObjectReturnId(ImageAnnotationEntity annotation) {
         KeyHolder key = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update("INSERT INTO objects (object) VALUES (:object)",
-                new MapSqlParameterSource("object", detectedObjectEntity.getObject()),
+                new MapSqlParameterSource("object", annotation.getObject()),
                 key);
 
         return Objects.requireNonNull(key.getKey()).longValue();
     }
 
     @Override
-    public List<Long> saveObjectsReturnIds(List<DetectedObjectEntity> detectedObjectEntities) {
-        List<Long> savedObjectIds = new ArrayList<>();
-        for (DetectedObjectEntity detectedObjectEntity : detectedObjectEntities) {
-            savedObjectIds.add(saveObjectReturnId(detectedObjectEntity));
+    public ImageAnnotationEntity saveObjectReturnAnnotation(ImageAnnotationEntity annotation) {
+        KeyHolder key = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update("INSERT INTO objects (object) VALUES (:object)",
+                new MapSqlParameterSource("object", annotation.getObject()),
+                key);
+
+        annotation.setObjectId(Objects.requireNonNull(key.getKey()).longValue());
+
+        return annotation;
+    }
+
+//    @Override
+//    public List<Long> saveObjectsReturnIds(List<ImageAnnotationEntity> annotationEntities) {
+//        List<Long> savedObjectIds = new ArrayList<>();
+//        for (ImageAnnotationEntity annotationEntity : annotationEntities) {
+//            savedObjectIds.add(saveObjectReturnId(annotationEntity));
+//        }
+//        return savedObjectIds;
+//    }
+
+    @Override
+    public List<ImageAnnotationEntity> saveObjectsReturnsAnnotations(List<ImageAnnotationEntity> annotationEntities) {
+        List<ImageAnnotationEntity> annotations = new ArrayList<>();
+        for (ImageAnnotationEntity annotationEntity : annotationEntities) {
+            ImageAnnotationEntity annotation = saveObjectReturnAnnotation(annotationEntity);
+            annotations.add(annotation);
         }
-        return savedObjectIds;
+        return annotations;
     }
 }

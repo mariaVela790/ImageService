@@ -1,6 +1,7 @@
 package com.imageservice.repository;
 
 import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageAnnotationEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,11 +12,14 @@ public interface DetectedObjectRepository {
 
     List<Long> getObjectIdsByObjects(List<String> objects);
 
-    int save(DetectedObjectEntity detectedObjectEntity);
+//    int save(DetectedObjectEntity detectedObjectEntity);
 
-    int saveObjects(List<DetectedObjectEntity> detectedObjectEntities);
+//    int saveObjects(List<DetectedObjectEntity> detectedObjectEntities);
 
-    Long saveObjectReturnId(DetectedObjectEntity detectedObjectEntity);
+    Long saveObjectReturnId(ImageAnnotationEntity annotation);
 
-    List<Long> saveObjectsReturnIds(List<DetectedObjectEntity> detectedObjectEntities);
+    ImageAnnotationEntity saveObjectReturnAnnotation(ImageAnnotationEntity annotation);
+
+//    List<Long> saveObjectsReturnIds(List<ImageAnnotationEntity> annotationEntities);
+    List<ImageAnnotationEntity> saveObjectsReturnsAnnotations(List<ImageAnnotationEntity> annotationEntities);
 }

@@ -1,6 +1,7 @@
 package com.imageservice.repository;
 
 import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageAnnotationEntity;
 import com.imageservice.entity.ImageEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,17 +27,20 @@ public class JdbcImageRepository implements ImageRepository{
     private JdbcImageObjectRepository imageObjectRepository;
 
     @Autowired
+    private JdbcImageAnnotationRepository annotationRepository;
+
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Override
-    public int update(ImageEntity imageEntity) {
-        return 0;
-    }
+//    @Override
+//    public int update(ImageEntity imageEntity) {
+//        return 0;
+//    }
 
-    @Override
-    public int deleteById(Long id) {
-        return 0;
-    }
+//    @Override
+//    public int deleteById(Long id) {
+//        return 0;
+//    }
 
     @Override
     public List<ImageEntity> findAll() {
@@ -79,28 +83,41 @@ public class JdbcImageRepository implements ImageRepository{
                             .build());
     }
 
-    @Override
-    public int save(ImageEntity image) {
-        return namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label)",
-                new MapSqlParameterSource("label", image.getLabel()));
-    }
+//    @Override
+//    public int save(ImageEntity image) {
+//        return namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label)",
+//                new MapSqlParameterSource("label", image.getLabel()));
+//    }
 
     @Override
     public ImageEntity saveImageWithObjects(ImageEntity image) {
-        System.out.printf("Saving image");
         KeyHolder key = new GeneratedKeyHolder();
-        int rows = namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label) ",
+
+        namedParameterJdbcTemplate.update("INSERT INTO images (label) values (:label) ",
                 new MapSqlParameterSource("label", image.getLabel()),
                 key);
-        System.out.printf("rows inserted %s", rows);
 
         Long imageId = Objects.requireNonNull(key.getKey()).longValue();
 
-        List<Long> objectIds = objectRepository.saveObjectsReturnIds(image.getDetectedObjects());
+        List<ImageAnnotationEntity> updatedAnnotations = objectRepository.saveObjectsReturnsAnnotations(Objects.requireNonNull(image.getAnnotations()));
 
-        imageObjectRepository.save(objectIds, imageId);
+        for (ImageAnnotationEntity updatedAnnotation : updatedAnnotations) {
+            // TODO return the id generated from image_object
+            Long imageObjectId = imageObjectRepository.saveReturnImageObjectId(updatedAnnotation.getObjectId(), imageId);
+
+            // use generated id to save
+            annotationRepository.save(updatedAnnotation, imageObjectId);
+        }
+
         image.setImageId(imageId);
+        image.setAnnotations(updatedAnnotations);
+
         return image;
     }
+
+//    @Override
+//    public Long saveReturnId(ImageEntity image) {
+//        return null;
+//    }
 
 }
