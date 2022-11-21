@@ -1,18 +1,24 @@
 package com.imageservice.controller;
 
-import com.imageservice.model.GetResponse;
-import com.imageservice.model.ImageFile;
-import com.imageservice.model.PostRequest;
-import com.imageservice.model.PostResponse;
-import com.imageservice.service.VisionService;
+import com.imageservice.entity.DetectedObjectEntity;
+import com.imageservice.entity.ImageEntity;
+import com.imageservice.model.Response;
+import com.imageservice.model.Image;
+import com.imageservice.model.Request;
+import com.imageservice.repository.JdbcImageRepository;
+import com.imageservice.service.ImageService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,20 +28,31 @@ public class ImagesController {
 
     @Autowired
     @NonNull
-    private VisionService visionService;
+    private ImageService imageService;
+
+    @Autowired
+    @NonNull
+    private JdbcImageRepository imageRepository;
 
     @GetMapping(
             path = "/images",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<GetResponse> getImageSearch(@RequestParam(required = false) List<String> objects) {
+    public ResponseEntity<Response> getImageSearch(@Validated @RequestParam(required = false) String objects) {
         if(objects != null) {
-            for(String object : objects) {
-                System.out.println(object);
-            }
+            String cleanString = objects.replaceAll("\"", "");
+            String[] strSplit = cleanString.split(",");
+
+            List<String> objectList = new ArrayList<String>(Arrays.asList(strSplit));
+            List<Image> imagesWithObjects = imageService.getImages(objectList);
+
+            Response response = Response.builder().images(imagesWithObjects).build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        GetResponse getResponse = GetResponse.builder().build();
+        List<Image> images = imageService.getImages();
+
+        Response getResponse = Response.builder().images(images).build();
         return new ResponseEntity<>(getResponse, HttpStatus.OK);
     }
 
@@ -43,11 +60,12 @@ public class ImagesController {
             path = "/images/{imageId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<GetResponse> getImage(@PathVariable String imageId) {
-        if (!imageId.isEmpty()){
-            System.out.printf(imageId);
-        }
-        GetResponse getResponse = GetResponse.builder().build();
+    public ResponseEntity<Response> getImage(@Validated @PathVariable Long imageId) {
+
+        Response getResponse = Response.builder()
+                .images(imageService.getImage(imageId))
+                .build();
+
         return new ResponseEntity<>(getResponse, HttpStatus.OK);
     }
 
@@ -56,41 +74,22 @@ public class ImagesController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<PostResponse> postImages(@RequestBody PostRequest request){
-        // Choosing MULTIPLART_FORM_DATA_VALUE because we want to send in a file and possibly a label and objectDetection
+    public ResponseEntity<Response> postImages(@Validated @RequestBody Request request){
 
-        System.out.println(request.toString());
-        System.out.println(request.getLabel());
-        System.out.println(request.getEnableDetection());
-        System.out.println(request.getImage());
-
-//        if(request.getImage() == null && request.getImageUri() == null) {
-        if(request.getImage() == null) {
+        if(request.getImageUrl() == null && request.getFilePath() == null) {
             // TODO change to bad request
             throw new IllegalArgumentException("Image file or external image url is required.");
         }
 
-//        if(request.getImage() != null && request.getImageUri() != null && !request.getImageUri().isEmpty()) {
-//        if(request.getImage() != null) {
-//            // TODO change to bad request
-//            throw new IllegalArgumentException("Only one of image of image uri can be specified");
-//        }
+        if(request.getImageUrl() != null && request.getFilePath() != null) {
+            // TODO change to bad request
+            throw new IllegalArgumentException("Only one of file path or url can be specified.");
+        }
 
-
-        ImageFile image = ImageFile.builder()
-                .filePath("/file/path")
+        Response response = Response.builder()
+                .images(imageService.persistImage(request))
                 .build();
 
-        PostResponse response = PostResponse.builder()
-                .imageId("123")
-                .image(image)
-                .label("genLabel")
-                .build();
-
-        // TODO create image service class to hold logic
-        // We send in the file but the pomeranian file will get used
-//        visionService.getImageAnnotations(request.getImage(), request.getImageUri());
-        visionService.getImageAnnotations(request.getImage());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

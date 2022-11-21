@@ -6,12 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,8 +18,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 public class VisionService {
-
-    // TODO be sure to call "close" on the imageClient when done
 
     private Image getImage(String imagePath, String imageUri) {
         try {
@@ -66,7 +59,6 @@ public class VisionService {
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
-                    //                  log.error("Error getting response with error: %s", res.getError().getMessage());
                     System.out.format("Error getting response with error: %s%n", res.getError().getMessage());
                 }
 
@@ -77,6 +69,7 @@ public class VisionService {
                 }
             }
 
+            // TODO split into two methods one for uri and one for file path?
 
         } catch (IOException e) {
             log.error("Error reading file");
