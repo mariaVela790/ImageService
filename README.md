@@ -40,7 +40,8 @@ The following is the design for this API.
 `http://localhost:8080/images/?objects="bird, feather"`
 
 ### Response
-````json{
+````JSON
+{
     "images": [
             {
                 "imageId": 1,
@@ -59,13 +60,15 @@ The following is the design for this API.
                 ]
             }
         ]
-}`
+}
+````
 
 ### Request GET
 `http://localhost:8080/images/`
 
 ### Response
-`{
+````JSON
+{
     "images": [
             {
                 "imageId": 1,
@@ -84,17 +87,21 @@ The following is the design for this API.
                 ]
             }
         ]
-}`
+}
+````
 
 ### Request POST 
-`{
+````JSON
+{
 "filePath": "/Users/montserratvela/IdeaProjects/hebinterview/src/main/resources/images/flower.jpeg",
 "label": "",
 "enableDetection": true
-}`
+}
+````
 
 ### Response
-`{
+````JSON
+{
 "images": [
     {
         "imageId": 3,
@@ -153,4 +160,5 @@ The following is the design for this API.
         ]
         }
     ]
-}`
+}
+````
